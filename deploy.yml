@@ -20,15 +20,20 @@
   tasks:
     - name: Install packages
       ansible.builtin.yum:
-        name: {{ item }}
+        name: "{{ item }}"
         state: present
       loop: "{{ packages }}"
       when: ansible_facts.distribution == "CentOs"
- 
+
+    - name: Create directory
+      ansible.builtin.file:
+        path: /homea/admin/files
+        state: directory
+
     - name: Template site file
       ansible.builtin.template:
-        src: /templates/index.html.j2
-        dest: /home/admin/index.html.j2
+        src: ./templates/index.html.j2
+        dest: /home/admin/files
       
     - name: Creation du conteneur
       community.docker.docker_container:
@@ -36,5 +41,3 @@
         image: httpd
         ports:
           - "80:80"
-        volumes:
-          - /home/admin/index.html.j2:/usr/local/apache2/htdocs/
